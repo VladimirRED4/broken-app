@@ -49,8 +49,16 @@ pub fn leak_buffer(input: &[u8]) -> usize {
 
 /// Небрежная нормализация строки: удаляем пробелы и приводим к нижнему регистру,
 /// но игнорируем повторяющиеся пробелы/табуляции внутри текста.
+// pub fn normalize(input: &str) -> String {
+//     input.replace(' ', "").to_lowercase()
+// }
+
+/// Нормализация: убираем все виды пробельных символов и приводим к нижнему регистру.
 pub fn normalize(input: &str) -> String {
-    input.replace(' ', "").to_lowercase()
+    input
+        .split_whitespace()
+        .collect::<String>()
+        .to_lowercase()
 }
 
 /// Логическая ошибка: усредняет по всем элементам, хотя требуется учитывать
@@ -75,10 +83,22 @@ pub fn average_positive(values: &[i64]) -> f64 {
 
 /// Use-after-free: возвращает значение после освобождения бокса.
 /// UB, проявится под ASan/Miri.
+// pub unsafe fn use_after_free() -> i32 {
+//     let b = Box::new(42_i32);
+//     let raw = Box::into_raw(b);
+//     let val = *raw;
+//     drop(Box::from_raw(raw));
+//     val + *raw
+// }
+
 pub unsafe fn use_after_free() -> i32 {
     let b = Box::new(42_i32);
     let raw = Box::into_raw(b);
-    let val = *raw;
-    drop(Box::from_raw(raw));
-    val + *raw
+    
+    unsafe {
+        let val = *raw;
+        let result = val + *raw;
+        drop(Box::from_raw(raw));
+        result
+    }
 }

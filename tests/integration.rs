@@ -72,11 +72,25 @@ fn fib_small_numbers() {
 
 #[test]
 fn normalize_simple() {
-    assert_eq!(normalize(" Hello World "), "helloworld");
+    assert_eq!(normalize(" Hello   World "), "helloworld");
 }
 
 #[test]
 fn averages_only_positive() {
     let nums = [-5, 5, 15];
     assert!((broken_app::average_positive(&nums) - 10.0).abs() < f64::EPSILON);
+}
+
+#[test]
+fn test_use_after_free() {
+    // Эта функция помечена как unsafe, поэтому её нужно вызывать в unsafe блоке
+    let result = unsafe { broken_app::use_after_free() };
+    // Miri должен поймать use-after-free здесь
+    println!("Result: {}", result);
+}
+
+#[test]
+fn race_increment_is_correct() {
+    let total = broken_app::concurrency::race_increment(1_000, 4);
+    assert_eq!(total, 4_000);
 }
