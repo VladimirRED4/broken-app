@@ -1,5 +1,6 @@
 use broken_app::{algo, leak_buffer, normalize, sum_even};
 
+// Тесты для sum_even
 #[test]
 fn sums_even_numbers() {
     let nums = [1, 2, 3, 4];
@@ -8,7 +9,6 @@ fn sums_even_numbers() {
 
 #[test]
 fn sums_even_numbers_regression() {
-    // Регрессионные тесты для исправленной версии
     let test_cases = vec![
         (vec![], 0, "empty"),
         (vec![1], 0, "single_odd"),
@@ -31,12 +31,34 @@ fn sums_even_numbers_large() {
     assert_eq!(result, 24_995_000);
 }
 
+// Тесты для leak_buffer
 #[test]
 fn counts_non_zero_bytes() {
     let data = [0_u8, 1, 0, 2, 3];
     assert_eq!(leak_buffer(&data), 3);
 }
 
+#[test]
+fn leak_buffer_no_memory_leak() {
+    // Этот тест проверяет отсутствие утечек памяти
+    let data = vec![1, 2, 3, 4, 5];
+    for _ in 0..100 {
+        assert_eq!(leak_buffer(&data), 5);
+    }
+}
+
+#[test]
+fn leak_buffer_empty() {
+    assert_eq!(leak_buffer(&[]), 0);
+}
+
+#[test]
+fn leak_buffer_all_zeros() {
+    let zeros = vec![0; 100];
+    assert_eq!(leak_buffer(&zeros), 0);
+}
+
+// Остальные тесты
 #[test]
 fn dedup_preserves_uniques() {
     let uniq = algo::slow_dedup(&[5, 5, 1, 2, 2, 3]);
