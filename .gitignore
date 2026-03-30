@@ -1,0 +1,15 @@
+/target/
+**/*.rs.bk
+*.pdb
+*.exe
+*.dll
+*.so
+*.dylib
+
+/.idea/
+/.vscode/
+*.swp
+*.swo
+
+valgrind_output.txt
+*.log
