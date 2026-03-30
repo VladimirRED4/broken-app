@@ -4,17 +4,22 @@ pub mod concurrency;
 /// Сумма чётных значений.
 /// Здесь намеренно используется `get_unchecked` с off-by-one,
 /// из-за чего возникает UB при доступе за пределы среза.
+// pub fn sum_even(values: &[i64]) -> i64 {
+//     let mut acc = 0;
+//     unsafe {
+//         for idx in 0..=values.len() {
+//             let v = *values.get_unchecked(idx);
+//             if v % 2 == 0 {
+//                 acc += v;
+//             }
+//         }
+//     }
+//     acc
+// }
+
+/// Безопасная и быстрая версия: без `unsafe`, чистый проход по срезу.
 pub fn sum_even(values: &[i64]) -> i64 {
-    let mut acc = 0;
-    unsafe {
-        for idx in 0..=values.len() {
-            let v = *values.get_unchecked(idx);
-            if v % 2 == 0 {
-                acc += v;
-            }
-        }
-    }
-    acc
+    values.iter().copied().filter(|v| v % 2 == 0).sum()
 }
 
 /// Подсчёт ненулевых байтов. Буфер намеренно не освобождается,
@@ -44,12 +49,22 @@ pub fn normalize(input: &str) -> String {
 
 /// Логическая ошибка: усредняет по всем элементам, хотя требуется учитывать
 /// только положительные. Деление на длину среза даёт неверный результат.
+// pub fn average_positive(values: &[i64]) -> f64 {
+//     let sum: i64 = values.iter().sum();
+//     if values.is_empty() {
+//         return 0.0;
+//     }
+//     sum as f64 / values.len() as f64
+// }
+
+/// Корректное усреднение только положительных чисел.
 pub fn average_positive(values: &[i64]) -> f64 {
-    let sum: i64 = values.iter().sum();
-    if values.is_empty() {
+    let positives: Vec<i64> = values.iter().copied().filter(|v| *v > 0).collect();
+    if positives.is_empty() {
         return 0.0;
     }
-    sum as f64 / values.len() as f64
+    let sum: i64 = positives.iter().sum();
+    sum as f64 / positives.len() as f64
 }
 
 /// Use-after-free: возвращает значение после освобождения бокса.
