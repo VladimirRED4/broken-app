@@ -18,7 +18,7 @@ fn sums_even_numbers_regression() {
         (vec![-4, -3, -2, -1], -6, "negative"),
         (vec![1000, 2001, 3000], 4000, "large"),
     ];
-    
+
     for (input, expected, desc) in test_cases {
         assert_eq!(sum_even(&input), expected, "Failed: {}", desc);
     }
