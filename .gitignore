@@ -11,5 +11,5 @@
 *.swp
 *.swo
 
-valgrind_output.txt
 *.log
+/artifacts/perf.data
